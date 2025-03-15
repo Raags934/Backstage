@@ -1,0 +1,67 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: conditional-form-example
+  title: Conditional Form Example
+  description: A template demonstrating conditional logic in the form.
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Select Service Type
+      required:
+        - serviceType
+      properties:
+        serviceType:
+          title: Choose a Service Type
+          type: string
+          enum:
+            - Database Service
+            - Web Service
+          description: Select the type of service you want to create.
+
+      dependencies:
+        serviceType:
+          oneOf:
+            - properties:
+                serviceType:
+                  const: Database Service
+                databaseType:
+                  title: Database Type
+                  type: string
+                  enum:
+                    - MySQL
+                    - PostgreSQL
+                    - MongoDB
+                  description: Choose the database type.
+
+            - properties:
+                serviceType:
+                  const: Web Service
+                frontendFramework:
+                  title: Frontend Framework
+                  type: string
+                  enum:
+                    - React
+                    - Angular
+                    - Vue.js
+                  description: Choose a frontend framework.
+
+  steps:
+    - id: print-service-details
+      name: Print Service Details
+      action: debug:log
+      input:
+        message: |
+          Selected Service: ${{ parameters.serviceType }}
+          {% if parameters.serviceType == "Database Service" %}
+          Database Type: ${{ parameters.databaseType }}
+          {% else %}
+          Frontend Framework: ${{ parameters.frontendFramework }}
+          {% endif %}
+
+  output:
+    links:
+      - title: View Generated Logs
+        url: "#"
